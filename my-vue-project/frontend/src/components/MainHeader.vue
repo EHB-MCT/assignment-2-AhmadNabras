@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app color="primary" class="header">
-    <!-- Logo and Title -->
+    <!-- Logo en Titel -->
     <v-toolbar-title>
       <img :src="logoPath" alt="CPG Logo" class="logo" />
       <span class="title">CPG</span>
@@ -8,10 +8,11 @@
 
     <v-spacer></v-spacer>
 
-    <!-- Navigation Buttons -->
+    <!-- Navigatieknoppen -->
     <v-btn text class="nav-btn" :to="{ path: '/' }">Home</v-btn>
     <v-btn text class="nav-btn" :to="{ path: '/about' }">About Us</v-btn>
     <v-btn text class="nav-btn" :to="{ path: '/color-palettes' }">Color Palettes</v-btn>
+    <v-btn text class="nav-btn" :to="{ path: '/analytics' }">Analytics</v-btn>
   </v-app-bar>
 </template>
 
@@ -20,7 +21,7 @@ export default {
   name: "MainHeader",
   data() {
     return {
-      logoPath: require('@/assets/images/logo.png'), // Dynamically resolve the logo
+      logoPath: require('@/assets/images/logo.png'), 
     };
   },
 };
@@ -28,16 +29,17 @@ export default {
 
 <style scoped>
 .header {
-  background-color: rgb(32, 0, 58) !important; /* Ensure the header has a blue background */
-  color: white !important; /* Ensure text is white */
+  background-color: rgb(32, 0, 58) !important; 
+  color: white !important; 
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .logo {
-  height: 50px; /* Adjust size as needed */
+  height: 50px; 
   margin-right: 10px;
 }
 
@@ -49,14 +51,15 @@ export default {
 }
 
 .nav-btn {
-  color: red !important; /* Set buttons' text color to red */
-  font-weight: bold; /* Make buttons more prominent */
-  font-size: 1.2rem; /* Increase font size for better visibility */
-  text-transform: none; /* Keep text in original casing */
-  margin: 0 10px; /* Add spacing between buttons */
+  color: #FFD700 !important; 
+  font-weight: bold; 
+  font-size: 1.2rem; 
+  text-transform: none; 
+  margin: 0 10px; 
+  transition: color 0.3s ease;
 }
 
 .nav-btn:hover {
-  color: yellow !important; /* Highlight buttons on hover */
+  color: #FF4500 !important; 
 }
 </style>
