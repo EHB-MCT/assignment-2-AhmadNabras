@@ -1,8 +1,15 @@
 const mongoose = require("mongoose");
 
-const colorGroupSchema = new mongoose.Schema({
-  group: { type: String, required: true, unique: true },
-  count: { type: Number, default: 0 },
+const ColorGroupSchema = new mongoose.Schema({
+  group: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  count: {
+    type: Number,
+    default: 0,
+  },
 });
 
-module.exports = mongoose.model("ColorGroup", colorGroupSchema);
+module.exports = mongoose.model("ColorGroup", ColorGroupSchema);

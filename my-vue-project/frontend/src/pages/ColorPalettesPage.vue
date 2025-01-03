@@ -128,14 +128,14 @@ export default {
     },
     async savePalette() {
       const paletteColors = this.colors.map((color) => color.hex);
+      console.log("Attempting to save palette:", paletteColors); // Debugging
 
       try {
         const response = await axios.post("http://localhost:5000/api/palettes", { colors: paletteColors });
         alert("Palette saved successfully!");
-        console.log("Saved Palette:", response.data.palette);
-        console.log("Grouped Counts:", response.data.groupedCounts);
+        console.log("Response from server:", response.data);
       } catch (error) {
-        console.error("Error saving palette:", error);
+        console.error("Error saving palette:", error.response || error.message);
         alert("Failed to save palette.");
       }
     },
@@ -146,9 +146,6 @@ export default {
   },
 };
 </script>
-
-
-
 
 <style scoped>
 .coolors-page {
