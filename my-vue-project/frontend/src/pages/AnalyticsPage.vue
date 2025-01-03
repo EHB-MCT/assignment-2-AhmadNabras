@@ -64,6 +64,20 @@ export default {
               display: true,
               position: "top",
             },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  return `${context.label}: ${context.raw}`;
+                },
+              },
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const elementIndex = elements[0].index;
+              const colorHex = labels[elementIndex]; // Use the label as the hex code
+              this.copyToClipboard(colorHex);
+            }
           },
           scales: {
             x: {
@@ -82,6 +96,16 @@ export default {
           },
         },
       });
+    },
+    copyToClipboard(text) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          alert(`Copied to clipboard: ${text}`);
+        })
+        .catch((error) => {
+          console.error("Failed to copy:", error);
+        });
     },
   },
   mounted() {
@@ -107,10 +131,13 @@ export default {
   color: white;
   padding: 30px 20px;
   margin-bottom: 40px;
+  margin-top: 50px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 .hero-title {
   font-size: 2.5rem;
   font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 .chart-container {
   max-width: 800px;
@@ -118,6 +145,7 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 canvas {
   max-width: 100%;
