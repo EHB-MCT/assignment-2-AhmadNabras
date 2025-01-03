@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "ColorPalettesPage",
   data() {
@@ -124,9 +126,18 @@ export default {
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
       return luminance > 0.5 ? "#000000" : "#FFFFFF";
     },
-    savePalette() {
-      console.log("Palette saved:", this.colors);
-      alert("Palette saved successfully!");
+    async savePalette() {
+      const paletteColors = this.colors.map((color) => color.hex);
+
+      try {
+        const response = await axios.post("http://localhost:5000/api/palettes", { colors: paletteColors });
+        alert("Palette saved successfully!");
+        console.log("Saved Palette:", response.data.palette);
+        console.log("Grouped Counts:", response.data.groupedCounts);
+      } catch (error) {
+        console.error("Error saving palette:", error);
+        alert("Failed to save palette.");
+      }
     },
     selectShade(index, shade) {
       // Replace the color hex with the selected shade
@@ -135,6 +146,9 @@ export default {
   },
 };
 </script>
+
+
+
 
 <style scoped>
 .coolors-page {

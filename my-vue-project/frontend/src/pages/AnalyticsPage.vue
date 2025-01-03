@@ -1,99 +1,214 @@
 <template>
   <v-container class="analytics-page">
-    <h1 class="title">Color Group Usage Analytics</h1>
-    <LineChart :groupCounts="groupCounts" />
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <h1 class="hero-title">Color Group Usage</h1>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-container">
+      <canvas id="colorGroupBarChart"></canvas>
+    </div>
   </v-container>
 </template>
 
 <script>
+import Chart from "chart.js/auto";
 import axios from "axios";
-import LineChart from "@/components/LineChart.vue";
 
 export default {
   name: "AnalyticsPage",
-  components: {
-    LineChart,
-  },
   data() {
     return {
-      colorGroups: [
-        "Red",
-        "Orange",
-        "Yellow",
-        "Green",
-        "Blue",
-        "Purple",
-        "Pink",
-        "Brown",
-        "Gray",
-        "Black",
-        "White",
-      ],
-      groupCounts: {},
+      chartInstance: null, // Houd de grafiekinstantie bij
+      colorMap: {
+        Red: "#FF5733",
+        Orange: "#FF8C00",
+        Yellow: "#FFD700",
+        Green: "#008000",
+        Blue: "#0000FF",
+        Purple: "#800080",
+        Pink: "#FFC0CB",
+        Brown: "#8B4513",
+        Gray: "#808080",
+        Black: "#000000",
+        White: "#FFFFFF",
+      },
     };
   },
   methods: {
     async fetchColorGroupData() {
       try {
-        const response = await axios.get("http://localhost:5000/api/palettes");
-        const palettes = response.data;
+        const response = await axios.get("http://localhost:5000/api/colorgroups");
+        const colorGroups = response.data;
 
-        // Initialize group counts
-        const groupCounts = this.colorGroups.reduce((acc, group) => {
-          acc[group] = 0;
-          return acc;
-        }, {});
+        const labels = colorGroups.map((group) => group.group);
+        const data = colorGroups.map((group) => group.count);
 
-        // Count color occurrences
-        palettes.forEach((palette) => {
-          palette.colors.forEach((color) => {
-            const group = this.getColorGroup(color);
-            if (group) {
-              groupCounts[group]++;
-            }
-          });
-        });
+        // Kies hier de gewenste kleurstrategie:
+        const backgroundColors = labels.map(
+          (label) => this.colorMap[label] || "#CCCCCC" // Gebruik de kleur uit de mapping of een fallbackkleur
+        );
 
-        this.groupCounts = groupCounts;
+        this.renderBarChart(labels, data, backgroundColors);
       } catch (error) {
-        console.error("Error fetching palettes:", error);
+        console.error("Error fetching color group data:", error);
       }
     },
-    getColorGroup(color) {
-      const colorGroupMap = {
-        Red: /^#(FF|F[0-9A-E]|E[0-9A-F])[0-9A-F]{4}$/i,
-        Orange: /^#(FF|F[0-9A-E]|E[0-9A-F])[89AB][0-9A-F]{3}$/i,
-        Yellow: /^#(FF|F[0-9A-E]|E[0-9A-F])([CD]|[C-F][0-9A-F])[0-9A-F]{2}$/i,
-        Green: /^#([3-6][0-9A-F]|00FF)[0-9A-F]{4}$/i,
-        Blue: /^#([0-9A-F]{2}[6-9][0-9A-F]|0000FF)[0-9A-F]{2}$/i,
-        Purple: /^#(8[0-9A-F]{2}|9[0-9A-F]{2}|800080)[0-9A-F]{2}$/i,
-        Pink: /^#(FF[0-9A-F]{2}[A-F][0-9A-F]|FFC0CB)$/i,
-        Brown: /^#(8B4513|A52A2A|D2691E|DEB887|F4A460|BC8F8F)$/i,
-        Gray: /^#([6-9A-F][0-9A-F]{5}|808080)$/i,
-        Black: /^#000000$/i,
-        White: /^#FFFFFF$/i,
-      };
+    renderBarChart(labels, data, backgroundColors) {
+      const ctx = document.getElementById("colorGroupBarChart").getContext("2d");
 
-      return Object.keys(colorGroupMap).find((group) =>
-        colorGroupMap[group].test(color)
-      );
+      // Vernietig de bestaande grafiek als deze al bestaat
+      if (this.chartInstance) {
+        this.chartInstance.destroy();
+      }
+
+      this.chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Color Group Usage",
+              data,
+              backgroundColor: backgroundColors, // Stel de achtergrondkleur in
+              borderColor: "rgba(0, 0, 0, 0.1)",
+              borderWidth: 2,
+              barThickness: 40,
+              hoverBackgroundColor: "#6FA3EF",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+              labels: {
+                color: "#444",
+                font: {
+                  size: 14,
+                  weight: "600",
+                },
+              },
+            },
+            tooltip: {
+              backgroundColor: "#fff",
+              titleColor: "#000",
+              bodyColor: "#333",
+              borderColor: "#ddd",
+              borderWidth: 1,
+              titleFont: {
+                size: 16,
+                weight: "bold",
+              },
+              bodyFont: {
+                size: 14,
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Color Groups",
+                color: "#555",
+                font: {
+                  size: 16,
+                  weight: "bold",
+                },
+              },
+              grid: {
+                display: false,
+              },
+              ticks: {
+                color: "#666",
+                font: {
+                  size: 14,
+                },
+              },
+            },
+            y: {
+              beginAtZero: true,
+              max: 50, // Zorg ervoor dat de maximale waarde 100 is
+              ticks: {
+                stepSize: 5, // Zet de stapgrootte op 10
+                color: "#666",
+                font: {
+                  size: 14,
+                },
+              },
+              title: {
+                display: true,
+                text: "Usage Count",
+                color: "#555",
+                font: {
+                  size: 16,
+                  weight: "bold",
+                },
+              },
+              grid: {
+                color: "#ddd",
+                borderDash: [5, 5],
+              },
+            },
+          },
+        },
+      });
     },
   },
   mounted() {
     this.fetchColorGroupData();
+  },
+  beforeUnmount() {
+    // Vernietig de grafiek bij het verlaten van de pagina
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
   },
 };
 </script>
 
 <style scoped>
 .analytics-page {
-  padding: 40px;
+  padding: 40px 20px;
   text-align: center;
+  background-color: #f9f9f9;
 }
 
-.title {
-  font-size: 2rem;
+/* Hero Title Styling */
+.hero-section {
+  text-align: center;
+  background-color: #1976d2;
+  color: white;
+  padding: 30px 20px;
+  margin-bottom: 40px;
+  margin-top: 50px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero-title {
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Chart Container Styling */
+.chart-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+canvas {
+  max-width: 100%;
+  height: 500px;
 }
 </style>
