@@ -32,6 +32,7 @@
   
   <script>
   import axios from "axios";
+  import EventBus from "@/utils/EventBus"; // Import EventBus
   
   export default {
     name: "LoginPage",
@@ -50,15 +51,21 @@
             password: this.password,
           });
   
-          // Save token and username in localStorage
+          // Save token and user data in localStorage
           localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user", JSON.stringify({ username: response.data.username }));
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ username: response.data.user.username })
+          );
   
-          // Navigate to home page
+          // Emit auth-change event
+          EventBus.emit("auth-change");
+  
+          // Navigate to the homepage
           this.$router.push("/");
-          window.location.reload(); // Ensure header updates after login
         } catch (error) {
-          this.errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+          this.errorMessage =
+            error.response?.data?.message || "Login failed. Please try again.";
         }
       },
       navigateToSignup() {
