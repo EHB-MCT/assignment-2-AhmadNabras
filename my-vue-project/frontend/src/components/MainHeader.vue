@@ -56,7 +56,7 @@ export default {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       this.$router.push("/login");
-      window.location.reload(); // Refresh to update header state
+      window.location.reload(); 
     },
   },
 };
@@ -64,8 +64,8 @@ export default {
 
 <style scoped>
 .header {
-  background-color: rgb(32, 0, 58); /* Dark blue background */
-  color: white; /* White text color */
+  background-color: rgb(32, 0, 58); 
+  color: white; 
   position: fixed;
   top: 0;
   width: 100%;
@@ -74,7 +74,7 @@ export default {
 }
 
 .logo {
-  height: 50px; /* Adjust logo size */
+  height: 50px; 
   margin-right: 10px;
 }
 
@@ -92,30 +92,39 @@ export default {
 
 .nav-btn {
   display: inline-block;
-  color: black !important; /* Black text color */
-  background-color: rgb(255, 255, 255); /* White background */
+  color: black !important; 
   font-weight: bold;
   font-size: 1.2rem;
   text-transform: none;
   margin: 0 10px;
   padding: 10px 20px;
-  border: 1px solid #ccc; /* Optional border */
-  border-radius: 5px; /* Rounded corners */
-  text-decoration: none; /* Remove underline */
+  border-radius: 5px; 
+  text-decoration: none; 
   transition: all 0.3s ease;
 }
 
 .nav-btn:hover {
-  background-color: #230068; /* Change background on hover */
-  color: white !important; /* Change text color on hover */
+  background-color: #ead200; 
+  color: #230068 !important; 
 }
 
 .nav-btn:active {
-  transform: scale(0.95); /* Add click animation */
+  transform: scale(0.95); 
 }
 
 .auth-btn {
   font-weight: bold;
   text-transform: none;
+  background-color: #230068;
+  color: aliceblue;
+}
+
+.auth-container{
+  margin-right: 10px;
+}
+
+.auth-container span{
+  color: #000000;
+  margin-right: 50px;
 }
 </style>
