@@ -1,3 +1,4 @@
+
 <template>
   <v-container fluid class="coolors-page">
     <!-- Palette Section -->
@@ -16,7 +17,7 @@
               :src="color.locked ? lockIcon : unlockIcon"
               alt="Lock Icon"
               class="icon"
-              @click="toggleLock(index)"
+              @click.stop="toggleLock(index)"
             />
 
             <!-- Color Shades Button -->
@@ -39,7 +40,7 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="(shade, shadeIndex) in generateShades(color.hex)"
+                  v-for="(shade, shadeIndex) in color.shades"
                   :key="shadeIndex"
                   :style="{ backgroundColor: shade, color: getTextColor(shade) }"
                   @click="selectShade(index, shade)"
@@ -56,7 +57,7 @@
     <!-- Actions Bar -->
     <div class="actions-bar">
       <v-btn color="primary" large @click="generateColors">Generate</v-btn>
-      <v-btn color="success" large @click="savePalette">Save Palette</v-btn>
+      <v-btn color="success" large @click="saveAndDownloadPalette">Save Palette</v-btn>
     </div>
 
     <!-- Success Popup -->
@@ -74,11 +75,11 @@ export default {
   data() {
     return {
       colors: [
-        { hex: "#FF5733", locked: false },
-        { hex: "#33FF57", locked: false },
-        { hex: "#3357FF", locked: false },
-        { hex: "#F3FF33", locked: false },
-        { hex: "#FF33A8", locked: false },
+        { hex: "#FF5733", locked: false, shades: [] },
+        { hex: "#33FF57", locked: false, shades: [] },
+        { hex: "#3357FF", locked: false, shades: [] },
+        { hex: "#F3FF33", locked: false, shades: [] },
+        { hex: "#FF33A8", locked: false, shades: [] },
       ],
       shadesVisible: [false, false, false, false, false], // Control shades visibility
       lockIcon: require("@/assets/images/lock.png"), // Lock icon path
@@ -89,11 +90,19 @@ export default {
   },
   methods: {
     generateColors() {
-      this.colors = this.colors.map((color) =>
-        color.locked
-          ? color
-          : { hex: `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`, locked: false }
-      );
+      this.colors = this.colors.map((color) => {
+        if (color.locked) return color;
+
+        const newHex = `#${Math.floor(Math.random() * 16777215)
+          .toString(16)
+          .padStart(6, "0")}`;
+
+        return {
+          hex: newHex,
+          locked: false,
+          shades: this.generateShades(newHex), // Generate shades for the new color
+        };
+      });
     },
     toggleLock(index) {
       this.colors[index].locked = !this.colors[index].locked;
@@ -114,7 +123,6 @@ export default {
       const num = parseInt(color.slice(1), 16);
       const amt = Math.round(2.55 * percent * 100);
 
-      // Helper function to clamp values between 0 and 255
       const clamp = (value) => Math.max(0, Math.min(255, value));
 
       const R = clamp((num >> 16) + amt);
@@ -152,12 +160,43 @@ export default {
       }
     },
     selectShade(index, shade) {
-      // Replace the color hex with the selected shade
       this.colors[index].hex = shade;
     },
+    downloadPaletteAsImage() {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas dimensions
+      canvas.width = this.colors.length * 200; // Each color block width
+      canvas.height = 200; // Block height
+
+      // Draw each color block
+      this.colors.forEach((color, index) => {
+        ctx.fillStyle = color.hex;
+        ctx.fillRect(index * 200, 0, 200, 200); // x, y, width, height
+      });
+
+      // Convert canvas to image and download
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/jpeg");
+      link.download = "color-palette.jpg";
+      link.click();
+    },
+    async saveAndDownloadPalette() {
+      await this.savePalette(); // Save palette to the database
+      this.downloadPaletteAsImage(); // Download palette as JPG
+    },
+  },
+  mounted() {
+    // Generate initial shades for each color
+    this.colors.forEach((color, index) => {
+      this.colors[index].shades = this.generateShades(color.hex);
+    });
   },
 };
 </script>
+
+
 
 <style scoped>
 .coolors-page {
