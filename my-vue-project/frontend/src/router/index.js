@@ -5,8 +5,11 @@ import ColorPalettesPage from "../pages/ColorPalettesPage.vue";
 import AnalyticsPage from "../pages/AnalyticsPage.vue";
 import LoginPage from "../pages/LoginPage.vue";
 import SignupPage from "../pages/SignupPage.vue";
+import DashboardPage from "../pages/DashboardPage.vue";
 
-// Define routes
+// Check if the user is authenticated
+const isAuthenticated = () => !!localStorage.getItem("token");
+
 const routes = [
   { path: "/", component: HomePage, name: "Home" },
   { path: "/about", component: AboutPage, name: "About" },
@@ -14,9 +17,20 @@ const routes = [
   { path: "/analytics", component: AnalyticsPage, name: "Analytics" },
   { path: "/login", component: LoginPage, name: "Login" },
   { path: "/signup", component: SignupPage, name: "Signup" },
+  {
+    path: "/dashboard",
+    component: DashboardPage,
+    name: "Dashboard",
+    beforeEnter: (to, from, next) => {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/login"); // Redirect to login if not authenticated
+      }
+    },
+  },
 ];
 
-// Create and configure router
 const router = createRouter({
   history: createWebHistory(),
   routes,

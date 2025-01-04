@@ -14,15 +14,15 @@
       <router-link to="/about" class="nav-btn">About Us</router-link>
       <router-link to="/color-palettes" class="nav-btn">Color Palettes</router-link>
       <router-link to="/analytics" class="nav-btn">Analytics</router-link>
+    </div>
 
-      <!-- Login/Logout Button -->
-      <v-btn
-        class="auth-btn"
-        @click="handleAuthAction"
-        :color="isAuthenticated ? 'error' : 'success'"
-      >
-        {{ isAuthenticated ? "Logout" : "Login" }}
-      </v-btn>
+    <v-spacer></v-spacer>
+
+    <!-- User Authentication -->
+    <div class="auth-container">
+      <span v-if="isAuthenticated" class="username">Welcome, {{ username }}</span>
+      <v-btn v-if="!isAuthenticated" text class="auth-btn" @click="goToLogin">Login</v-btn>
+      <v-btn v-if="isAuthenticated" text class="auth-btn" @click="logout">Logout</v-btn>
     </div>
   </v-app-bar>
 </template>
@@ -32,24 +32,31 @@ export default {
   name: "MainHeader",
   data() {
     return {
-      logoPath: require('@/assets/images/logo.png'), // Replace with your logo path
+      logoPath: require('@/assets/images/logo.png'),
     };
   },
   computed: {
     isAuthenticated() {
       return !!localStorage.getItem("token");
     },
+    username() {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        return user && user.username ? user.username : "";
+      } catch {
+        return "";
+      }
+    },
   },
   methods: {
-    handleAuthAction() {
-      if (this.isAuthenticated) {
-        // Perform logout
-        localStorage.removeItem("token");
-        this.$router.push("/login");
-      } else {
-        // Navigate to login page
-        this.$router.push("/login");
-      }
+    goToLogin() {
+      this.$router.push("/login");
+    },
+    logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      this.$router.push("/login");
+      window.location.reload(); // Refresh to update header state
     },
   },
 };

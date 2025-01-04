@@ -1,37 +1,44 @@
 <template>
-    <v-container class="auth-page">
-      <h1 class="auth-title">Sign Up</h1>
-      <v-form>
-        <v-text-field
-          label="Username"
-          v-model="username"
-          outlined
-          class="auth-input"
-        ></v-text-field>
-        <v-text-field
-          label="Email"
-          v-model="email"
-          type="email"
-          outlined
-          class="auth-input"
-        ></v-text-field>
-        <v-text-field
-          label="Password"
-          v-model="password"
-          type="password"
-          outlined
-          class="auth-input"
-        ></v-text-field>
-        <v-btn color="primary" block @click="signup" class="auth-btn">Sign Up</v-btn>
-      </v-form>
-      <p class="auth-footer">
-        Already have an account?
-        <router-link to="/login">Login</router-link>
-      </p>
+    <v-container class="signup-page">
+      <div class="signup-card">
+        <h1 class="signup-title">Sign Up</h1>
+        <v-form @submit.prevent="register">
+          <v-text-field
+            v-model="username"
+            label="Username"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="email"
+            label="Email"
+            type="email"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="password"
+            label="Password"
+            type="password"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <v-btn color="primary" block large @click="register">Sign Up</v-btn>
+        </v-form>
+        <p class="login-link">
+          Already have an account?
+          <router-link to="/login">Login here</router-link>.
+        </p>
+      </div>
     </v-container>
   </template>
   
   <script>
+  import axios from "axios";
+  
   export default {
     name: "SignupPage",
     data() {
@@ -42,36 +49,50 @@
       };
     },
     methods: {
-      signup() {
-        console.log("Signup functionality here");
+      async register() {
+        try {
+          await axios.post("http://localhost:5000/api/auth/register", {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+          });
+          alert("User registered successfully!");
+          this.$router.push("/login");
+        } catch (error) {
+          console.error("Error registering user:", error.response?.data?.message || error.message);
+          alert(error.response?.data?.message || "Registration failed.");
+        }
       },
     },
   };
   </script>
   
   <style scoped>
-  .auth-page {
+  .signup-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+  }
+  .signup-card {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
     max-width: 400px;
-    margin: 100px auto;
     text-align: center;
   }
-  .auth-title {
-    font-size: 2rem;
+  .signup-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1976d2;
     margin-bottom: 20px;
   }
-  .auth-input {
-    margin-bottom: 15px;
-  }
-  .auth-btn {
-    margin-top: 10px;
-  }
-  .auth-footer {
+  .login-link {
     margin-top: 20px;
-  }
-  .auth-footer a {
-    color: #1976d2;
-    text-decoration: none;
-    font-weight: bold;
+    font-size: 0.9rem;
   }
   </style>
   
