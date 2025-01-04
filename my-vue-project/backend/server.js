@@ -11,7 +11,9 @@ app.use(express.json());
 
 // Routes
 const paletteRoutes = require("./routes/paletteRoutes");
+const authRoutes = require("./routes/authRoutes"); // Import authRoutes
 app.use("/", paletteRoutes);
+app.use("/auth", authRoutes); // Use authRoutes
 
 // Database connection and server start
 const PORT = process.env.PORT || 5000;

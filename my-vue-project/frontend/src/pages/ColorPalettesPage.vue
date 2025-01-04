@@ -113,14 +113,19 @@ export default {
     shadeColor(color, percent) {
       const num = parseInt(color.slice(1), 16);
       const amt = Math.round(2.55 * percent * 100);
-      const R = (num >> 16) + amt;
-      const G = ((num >> 8) & 0x00ff) + amt;
-      const B = (num & 0x0000ff) + amt;
+
+      // Helper function to clamp values between 0 and 255
+      const clamp = (value) => Math.max(0, Math.min(255, value));
+
+      const R = clamp((num >> 16) + amt);
+      const G = clamp(((num >> 8) & 0x00ff) + amt);
+      const B = clamp((num & 0x0000ff) + amt);
+
       return `#${(
         0x1000000 +
-        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-        (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-        (B < 255 ? (B < 1 ? 0 : B) : 255)
+        R * 0x10000 +
+        G * 0x100 +
+        B
       )
         .toString(16)
         .slice(1)}`;

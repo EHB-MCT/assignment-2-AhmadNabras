@@ -14,6 +14,15 @@
       <router-link to="/about" class="nav-btn">About Us</router-link>
       <router-link to="/color-palettes" class="nav-btn">Color Palettes</router-link>
       <router-link to="/analytics" class="nav-btn">Analytics</router-link>
+
+      <!-- Login/Logout Button -->
+      <v-btn
+        class="auth-btn"
+        @click="handleAuthAction"
+        :color="isAuthenticated ? 'error' : 'success'"
+      >
+        {{ isAuthenticated ? "Logout" : "Login" }}
+      </v-btn>
     </div>
   </v-app-bar>
 </template>
@@ -23,8 +32,25 @@ export default {
   name: "MainHeader",
   data() {
     return {
-      logoPath: require('@/assets/images/logo.png'), // Update with your logo path
+      logoPath: require('@/assets/images/logo.png'), // Replace with your logo path
     };
+  },
+  computed: {
+    isAuthenticated() {
+      return !!localStorage.getItem("token");
+    },
+  },
+  methods: {
+    handleAuthAction() {
+      if (this.isAuthenticated) {
+        // Perform logout
+        localStorage.removeItem("token");
+        this.$router.push("/login");
+      } else {
+        // Navigate to login page
+        this.$router.push("/login");
+      }
+    },
   },
 };
 </script>
@@ -55,7 +81,6 @@ export default {
 .nav-container {
   display: flex;
   align-items: center;
- 
 }
 
 .nav-btn {
@@ -80,5 +105,10 @@ export default {
 
 .nav-btn:active {
   transform: scale(0.95); /* Add click animation */
+}
+
+.auth-btn {
+  font-weight: bold;
+  text-transform: none;
 }
 </style>
