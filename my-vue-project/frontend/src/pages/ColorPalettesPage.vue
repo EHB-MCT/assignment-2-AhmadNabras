@@ -58,6 +58,11 @@
       <v-btn color="primary" large @click="generateColors">Generate</v-btn>
       <v-btn color="success" large @click="savePalette">Save Palette</v-btn>
     </div>
+
+    <!-- Success Popup -->
+    <div v-if="showSuccessPopup" class="success-popup">
+      Palette saved successfully!
+    </div>
   </v-container>
 </template>
 
@@ -76,9 +81,10 @@ export default {
         { hex: "#FF33A8", locked: false },
       ],
       shadesVisible: [false, false, false, false, false], // Control shades visibility
-      lockIcon: require('@/assets/images/lock.png'), // Lock icon path
-      unlockIcon: require('@/assets/images/unlock.png'), // Unlock icon path
-      shadesIcon: require('@/assets/images/shades.png'), // Shades icon path
+      lockIcon: require("@/assets/images/lock.png"), // Lock icon path
+      unlockIcon: require("@/assets/images/unlock.png"), // Unlock icon path
+      shadesIcon: require("@/assets/images/shades.png"), // Shades icon path
+      showSuccessPopup: false, // Success popup visibility
     };
   },
   methods: {
@@ -128,14 +134,15 @@ export default {
     },
     async savePalette() {
       const paletteColors = this.colors.map((color) => color.hex);
-      console.log("Attempting to save palette:", paletteColors); // Debugging
 
       try {
-        const response = await axios.post("http://localhost:5000/api/palettes", { colors: paletteColors });
-        alert("Palette saved successfully!");
-        console.log("Response from server:", response.data);
+        await axios.post("http://localhost:5000/api/palettes", { colors: paletteColors });
+        this.showSuccessPopup = true; // Show success popup
+        setTimeout(() => {
+          this.showSuccessPopup = false; // Hide popup after 2-3 seconds
+        }, 3000);
       } catch (error) {
-        console.error("Error saving palette:", error.response || error.message);
+        console.error("Error saving palette:", error);
         alert("Failed to save palette.");
       }
     },
@@ -207,5 +214,22 @@ export default {
   padding: 20px;
   background-color: #f5f5f5;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Success Popup Styling */
+.success-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  z-index: 1000;
 }
 </style>

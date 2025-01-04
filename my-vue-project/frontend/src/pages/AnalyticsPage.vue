@@ -2,10 +2,16 @@
   <v-container class="analytics-page">
     <div class="hero-section">
       <h1 class="hero-title">Color Usage</h1>
+      <h2>Click on the color bar to copy the Hex code</h2>
     </div>
 
     <div class="chart-container">
       <canvas id="colorUsageBarChart"></canvas>
+    </div>
+
+    <!-- Success Popup -->
+    <div v-if="showSuccessPopup" class="success-popup">
+      Hex code copied successfully!
     </div>
   </v-container>
 </template>
@@ -19,6 +25,7 @@ export default {
   data() {
     return {
       chartInstance: null,
+      showSuccessPopup: false, // Controls the visibility of the success popup
     };
   },
   methods: {
@@ -101,7 +108,10 @@ export default {
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          alert(`Copied to clipboard: ${text}`);
+          this.showSuccessPopup = true; // Show success popup
+          setTimeout(() => {
+            this.showSuccessPopup = false; // Hide popup after 2-3 seconds
+          }, 3000);
         })
         .catch((error) => {
           console.error("Failed to copy:", error);
@@ -150,5 +160,22 @@ export default {
 canvas {
   max-width: 100%;
   height: 400px;
+}
+
+/* Success Popup Styling */
+.success-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  z-index: 1000;
 }
 </style>
