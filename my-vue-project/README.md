@@ -92,6 +92,22 @@ To view the **Analytics** page, users must log in. If a user does not have an ac
 
 ---
 
+## **Development Workflow**
+To ensure an organized development process, feature branches were used. For instance:
+- The **login-system** branch was created to implement the user authentication system, including login, signup, and restricted access to analytics.
+
+This workflow ensures:
+- Clear separation of concerns.
+- Easier collaboration and code reviews.
+- Safe integration into the main branch after thorough testing.
+
+To view or work on the login-system branch:
+```bash
+git checkout login-system
+```
+
+---
+
 ## **Usage**
 1. Register an account and log in.
 2. Generate and save your favorite color palettes.
