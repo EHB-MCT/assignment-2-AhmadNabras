@@ -1,4 +1,3 @@
-Hier is de bijgewerkte README.md met de extra informatie:
 
 ```markdown
 # **Color Palette Generator (CPG)**
