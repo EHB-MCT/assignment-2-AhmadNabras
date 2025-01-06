@@ -43,17 +43,10 @@ export default {
       }
     },
     renderBarChart(labels, data) {
-      const canvas = document.getElementById("colorUsageBarChart");
-
-      if (!canvas) {
-        console.error("Canvas element not found!");
-        return;
-      }
-
-      const ctx = canvas.getContext("2d");
+      const ctx = document.getElementById("colorUsageBarChart").getContext("2d");
 
       if (this.chartInstance) {
-        this.chartInstance.destroy(); // Properly destroy any existing chart instance
+        this.chartInstance.destroy();
       }
 
       this.chartInstance = new Chart(ctx, {
@@ -130,8 +123,7 @@ export default {
   },
   beforeUnmount() {
     if (this.chartInstance) {
-      this.chartInstance.destroy(); // Properly destroy the chart instance
-      this.chartInstance = null;
+      this.chartInstance.destroy();
     }
   },
 };
